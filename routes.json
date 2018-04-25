@@ -1,0 +1,6 @@
+{
+  "get": {
+      "/": ["server.story", "5"],
+      "/user/(?P<username>\\w+)": ["server.story", "21"]
+    }
+}
