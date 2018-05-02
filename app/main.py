@@ -85,7 +85,7 @@ class ExecHandler(web.RequestHandler):
         param = dumps(param)
 
         result = yield ExecAsync(
-            Engine.RunStory.future(param, 30))
+            Engine.Request.future(param, 30))
 
         self.finish(result)
 
