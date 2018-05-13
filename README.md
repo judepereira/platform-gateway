@@ -4,9 +4,9 @@ API gateway server for executing Stories via HTTP/TCP/WebSockets.
 
 ```coffee
 http-endpoint method:get path:'/' as request, response
-    response write data:'Hello World'
-    response status code:200
-    response finish
+    response.write data:'Hello World'
+    response.status code:200
+    response.finish
 ```
 
 ```sh
