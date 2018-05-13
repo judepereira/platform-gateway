@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
+
 import grpc
 
-from .rpc import http_proxy_pb2_grpc
+from ..rpc import http_proxy_pb2_grpc
 
 
 def GrpcStub(host):

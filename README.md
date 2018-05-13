@@ -1,10 +1,12 @@
 # Asyncy Server
 
-Gateway and proxy for executing Stories via HTTP/TCP/WebSockets.
+API gateway server for executing Stories via HTTP/TCP/WebSockets.
 
 ```coffee
-http method:get path:'/' as request, response
-  res write data:'Hello World'
+http-endpoint method:get path:'/' as request, response
+    response write data:'Hello World'
+    response status code:200
+    response finish
 ```
 
 ```sh
@@ -15,8 +17,16 @@ curl https://foobar.asyncyapp.com
 
 ## Development
 
-Run locally by having the Engine running and call
+Setup virtual environment and install dependancies
+```
+virtualenv -p python3.6 venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+Run locally by calling
 
 ```
-DEBUG=1 CONFIG_DIR=$PWD ENGINE=localhost:50051 python -m app.main --logging=debug
+python -m app.main --logging=debug --debug --engine=engine:50051
 ```
+> Assuming the Asyncy Engine is at `engine:50051`

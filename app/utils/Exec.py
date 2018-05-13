@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from tornado import ioloop as _ioloop
 from tornado.gen import Future
 
@@ -10,7 +12,7 @@ def _fwrap(f, gf):
 
 
 def ExecAsync(gf, ioloop=None):
-    '''
+    """
     Wraps a GRPC result in a future that can be yielded by tornado
 
     Usage::
@@ -19,7 +21,7 @@ def ExecAsync(gf, ioloop=None):
         def my_fn(param):
             result = yield execAsync(stub.function_name.future(param, timeout))
 
-    '''
+    """
     f = Future()
 
     if ioloop is None:
