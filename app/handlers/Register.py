@@ -3,8 +3,6 @@
 from json import loads
 from tornado.web import RequestHandler, HTTPError
 
-from ..utils.Router import make_router
-
 
 class RegisterHandler(RequestHandler):
     def prepare(self):
@@ -17,21 +15,15 @@ class RegisterHandler(RequestHandler):
 
     def post(self):
         """
-        Replace all routes
+        Registera a route
+        POST -d {method:get, endpoint:/ filename:path.story, linenum:1}
         """
-        routes = loads(self.request.body)
-        router = make_router(routes)
-        self.application.set_router(router)
+        self.application.register_route(**loads(self.request.body))
         self.set_status(204)
-
-    def put(self):
-        """
-        Add new routes
-        """
-        pass
 
     def delete(self):
         """
-        Delete a routes
+        Unregister a route
         """
-        pass
+        self.application.unregister_route(**loads(self.request.body))
+        self.set_status(204)

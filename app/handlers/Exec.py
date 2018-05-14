@@ -4,7 +4,7 @@ from tornado.gen import coroutine, Future
 from tornado.web import RequestHandler, HTTPError
 from tornado.log import app_log
 
-from ..utils.Router import Route
+from ..utils.Router import Resolve
 from ..utils.Exec import ExecAsync
 
 
@@ -66,15 +66,15 @@ class ExecHandler(RequestHandler):
         A http request to `/~/folder/story:3` will directly execute that story.
         """
         if ':' in path:
-            path, start = tuple(path.split(':', 1))
+            path, linenum = tuple(path.split(':', 1))
         else:
-            start = 1
+            linenum = 1
 
         # [TODO] HTTPError(404) if filename does not exist
 
-        resolve = Route(
+        resolve = Resolve(
             filename=path,
-            start=start,
+            linenum=linenum,
             paths=None
         )
 
@@ -94,7 +94,7 @@ class ExecHandler(RequestHandler):
         # geneate the grpc parameters
         params = {
             'story_name': resolve.filename,
-            'start': resolve.start,
+            'start': resolve.linenum,
             'json_context': context
         }
         params = dumps(params)
