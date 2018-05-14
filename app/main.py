@@ -13,6 +13,9 @@ define('debug', default=False, help='enable debug')
 define('port',
        default=int(os.getenv('PORT', '8888')),
        help='port to listen on')
+define('sentry_dsn',
+       default=os.getenv('SENTRY_DSN'),
+       help='Sentry DSN')
 define('engine',
        default=os.getenv('ENGINE', 'engine:50051'),
        help='engine hostname:port')
@@ -31,12 +34,17 @@ def make_app():
         (r'/(?P<is_file>~/)?(?P<path>.*)', handlers.ExecHandler)
     ]
 
-    return App(
+    app = App(
         engine_stub,
         handlers=_handlers,
         debug=options.debug,
         routes_file=options.routes_file
     )
+
+    if options.sentry_dsn:
+        application.sentry_client = AsyncSentryClient(options.sentry_dsn)
+
+    return app
 
 
 if __name__ == '__main__':

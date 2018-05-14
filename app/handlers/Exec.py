@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from json import dumps
+from raven.contrib.tornado import SentryMixin
 from tornado.gen import coroutine, Future
 from tornado.web import RequestHandler, HTTPError
 from tornado.log import app_log
@@ -8,7 +9,7 @@ from ..utils.Router import Resolve
 from ..utils.Exec import ExecAsync
 
 
-class ExecHandler(RequestHandler):
+class ExecHandler(SentryMixin, RequestHandler):
     def get_request_body(self):
         if 'multipart/form-data' in self.request.headers.get('Content-Type'):
             return self.request.files
