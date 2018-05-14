@@ -1,0 +1,26 @@
+commands:
+  register:
+    help: Register a new http endpoint on the server that points to a story:line
+    arguments: &arguments
+      - name: method
+        type: string
+        enum:
+          - get
+          - post
+          - delete
+          - patch
+        help: The HTTP method to register to.
+      - name: endpoint
+        type: string
+        help: The url endpoint that should map to this story.
+      - name: filename
+        type: string
+        help: The story filename that should be executed.
+      - name: linenum
+        type: int
+        help: The line number to start the Story from.
+
+  unregister:
+    help: Unregister a new http endpoint
+    arguments: *arguments
+

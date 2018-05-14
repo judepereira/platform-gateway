@@ -30,3 +30,23 @@ Run locally by calling
 python -m app.main --logging=debug --debug --engine=engine:50051
 ```
 > Assuming the Asyncy Engine is at `engine:50051`
+
+
+### Register an endpoint
+
+```shell
+curl -X POST -d '{"method":"post", "endpoint":"/(?P<hello>\\w+)", "filename":"hello.story", "linenum":1}' http://localhost:8888/+
+```
+
+Now access that endpoint
+
+```shell
+curl -X POST -d 'foobar' http://localhost:8888/world
+```
+
+
+### Unregister an endpoint
+
+```shell
+curl -X DELETE -d '{"method":"post", "endpoint":"/(?P<hello>\\w+)", "filename":"hello.story", "linenum":1}' http://localhost:8888/+
+```
