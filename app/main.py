@@ -10,8 +10,12 @@ from . import handlers
 
 
 define('debug', default=False, help='enable debug')
-define('port', default=8888, help='port to listen on')
-define('engine', default='engine:50051', help='engine hostname:port')
+define('port',
+       default=int(os.getenv('PORT', '8888')),
+       help='port to listen on')
+define('engine',
+       default=os.getenv('ENGINE', 'engine:50051'),
+       help='engine hostname:port')
 define('routes_file',
        default=os.getenv('ROUTES_FILE',
                          os.path.join(os.path.dirname(__file__),
