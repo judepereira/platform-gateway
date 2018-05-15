@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from json import dumps
 from raven.contrib.tornado import SentryMixin
-from tornado.gen import coroutine, Future
+from tornado.gen import coroutine, Return
 from tornado.web import RequestHandler, HTTPError
 from tornado.log import app_log
 
 from ..utils.Router import Resolve
-from ..utils.Exec import ExecAsync
+from ..utils.AsyncRPC import patch_iterator
 
 
 class ExecHandler(SentryMixin, RequestHandler):
@@ -100,11 +100,28 @@ class ExecHandler(SentryMixin, RequestHandler):
         }
         params = dumps(params)
 
-        result = yield ExecAsync(
-            self.application.engine.RunStory.future(params, 30)
-        )
+        stream = self.application.engine.RunStory(params)
+        patch_iterator(stream)
+        for result in stream
+            try:
+                self.rpc_callback((yield result))
+            except (Return, StopIteration):
+                break
 
-        self.finish(result)
+        self.finish()
+
+    def rpc_callback(self, result):
+        if result.command == 'set_status':
+            self.set_status(result.args.status)
+
+        elif result.command == 'set_header':
+            self.set_header(result.args.name, result.args.value)
+
+        elif result.command == 'write':
+            self.write(result.args.content)
+
+        elif result.command == 'finish':
+            raise Return()
 
     @coroutine
     def head(self, is_file, path):
