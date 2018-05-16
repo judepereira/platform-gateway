@@ -27,7 +27,7 @@ pip install -r requirements.txt
 Run locally by calling
 
 ```
-python -m app.main --logging=debug --debug --engine=engine:50051
+python -m app.main --logging=debug --debug --engine=engine:8888
 ```
 > Assuming the Asyncy Engine is at `engine:50051`
 

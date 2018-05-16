@@ -12,7 +12,7 @@ Route = namedtuple('Route', ['endpoint', 'filename', 'linenum'])
 
 
 class App(Application):
-    def __init__(self, engine_stub, routes_file, **kwargs):
+    def __init__(self, routes_file, **kwargs):
 
         if os.path.exists(routes_file):
             # Server restarted, load the cache of routes
@@ -23,8 +23,6 @@ class App(Application):
             self._routes = {}
 
             self._router = None
-
-        self.engine = engine_stub
 
         super(App, self).__init__(routes_file=routes_file, **kwargs)
 

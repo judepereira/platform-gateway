@@ -5,7 +5,6 @@ from tornado import ioloop
 from tornado.options import define, options
 
 from .App import App
-from .utils.Stub import GrpcStub
 from . import handlers
 
 
@@ -16,8 +15,8 @@ define('port',
 define('sentry_dsn',
        default=os.getenv('SENTRY_DSN'),
        help='Sentry DSN')
-define('engine',
-       default=os.getenv('ENGINE', 'engine:50051'),
+define('engine_addr',
+       default=os.getenv('ENGINE_ADDR', 'engine:8888'),
        help='engine hostname:port')
 define('routes_file',
        default=os.getenv('ROUTES_FILE',
@@ -27,7 +26,6 @@ define('routes_file',
 
 
 def make_app():
-    engine_stub = GrpcStub(options.engine)
 
     _handlers = [
         (r'/\+', handlers.RegisterHandler),
@@ -35,9 +33,9 @@ def make_app():
     ]
 
     app = App(
-        engine_stub,
         handlers=_handlers,
         debug=options.debug,
+        engine_addr=options.engine_addr,
         routes_file=options.routes_file
     )
 

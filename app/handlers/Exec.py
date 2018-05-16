@@ -2,11 +2,11 @@
 from json import dumps
 from raven.contrib.tornado import SentryMixin
 from tornado.gen import coroutine, Future
-from tornado.web import RequestHandler, HTTPError
+from tornado.httpclient import AsyncHTTPClient
 from tornado.log import app_log
+from tornado.web import RequestHandler, HTTPError
 
 from ..utils.Router import Resolve
-from ..utils.Exec import ExecAsync
 
 
 class ExecHandler(SentryMixin, RequestHandler):
@@ -40,24 +40,7 @@ class ExecHandler(SentryMixin, RequestHandler):
                 'arguments': {k: self.get_argument(k) for k in self.request.arguments},
                 'headers': dict(self.request.headers)
             },
-            'response': {
-                'write()': {
-                    'input': {
-                        'data': {
-                            'type': 'any'
-                        }
-                    }
-                },
-                'status()': {
-                    'input': {
-                        'code': {
-                            'type': 'int'
-                        }
-                    }
-                },
-                'finish()': {}
-            }
-
+            'response': { }
         }
 
         return resolve, context
@@ -92,7 +75,7 @@ class ExecHandler(SentryMixin, RequestHandler):
             # resolve to http listeners
             resolve, context = self.resolve_by_uri(path)
 
-        # geneate the grpc parameters
+        # geneate the parameters for Engine
         params = {
             'story_name': resolve.filename,
             'start': resolve.linenum,
@@ -100,11 +83,36 @@ class ExecHandler(SentryMixin, RequestHandler):
         }
         params = dumps(params)
 
-        result = yield ExecAsync(
-            self.application.engine.RunStory.future(params, 30)
+        http_client = AsyncHTTPClient(
+            request_timeout=60
+        )
+        yield http_client.fetch(
+            'http://%s' % self.application.settings['engine_addr'],
+            body=params,
+            streaming_callback=self._callback
         )
 
-        self.finish(result)
+        self.finish()
+
+    def _callback(self, chunk):
+        """
+        Chunk examples that come from the Engine
+            set_status 200
+            set_header {"name":"X-Data", "value":"Asyncy"}
+            write Hello, world
+            ~finish~ will not be passed since it will close the connection
+        """
+        command, data = chunk.split(' ', 1)
+
+        if command == 'set_status':
+            self.set_status(data)
+
+        elif command == 'set_header':
+            args = loads(args)
+            self.set_header(args['name'], args['value'])
+
+        elif command == 'write':
+            self.write(data)
 
     @coroutine
     def head(self, is_file, path):
