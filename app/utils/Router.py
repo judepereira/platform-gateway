@@ -4,7 +4,7 @@ from collections import namedtuple
 from tornado.routing import Router, Matcher, RuleRouter, Rule, PathMatches
 
 
-Resolve = namedtuple('Resolve', ['filename', 'linenum', 'paths'])
+Resolve = namedtuple('Resolve', ['filename', 'block', 'paths'])
 
 
 def dict_decode_values(_dict):
@@ -18,14 +18,14 @@ def dict_decode_values(_dict):
 
 
 class CustomRouter(Router):
-    def __init__(self, filename, linenum):
+    def __init__(self, filename, block):
         self.filename = filename
-        self.linenum = linenum
+        self.block = block
 
     def find_handler(self, request, **kwargs):
         return Resolve(
             filename=self.filename,
-            linenum=self.linenum,
+            block=self.block,
             paths=dict_decode_values(kwargs.get('path_kwargs', {}))
         )
 
@@ -51,7 +51,7 @@ def make_router(routing_table):
         rules = [
             Rule(
                 PathMatches(route.endpoint),
-                CustomRouter(route.filename, route.linenum)
+                CustomRouter(route.filename, route.block)
             ) for route in routes
         ]
         # create a new rule by method mapping to many rule by path

@@ -8,7 +8,7 @@ from tornado.web import Application
 from .utils.Router import make_router
 
 
-Route = namedtuple('Route', ['endpoint', 'filename', 'linenum'])
+Route = namedtuple('Route', ['endpoint', 'filename', 'block'])
 
 
 class App(Application):
@@ -30,15 +30,15 @@ class App(Application):
     def router(self):
         return self._router
 
-    def register_route(self, method, endpoint, filename, linenum):
+    def register_route(self, method, endpoint, filename, block):
         # add to the already registered routes
         self._routes.setdefault(method, set())\
-                    .add(Route(endpoint, filename, linenum))
+                    .add(Route(endpoint, filename, block))
         self._rebuild_router()
 
-    def unregister_route(self, method, endpoint, filename, linenum):
+    def unregister_route(self, method, endpoint, filename, block):
         self._routes.get(method, set())\
-                    .remove(Route(endpoint, filename, linenum))
+                    .remove(Route(endpoint, filename, block))
         self._rebuild_router()
 
     def _rebuild_router(self):

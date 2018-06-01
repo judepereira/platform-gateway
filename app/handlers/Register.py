@@ -17,7 +17,7 @@ class RegisterHandler(SentryMixin, RequestHandler):
     def post(self):
         """
         Registera a route
-        POST -d {method:get, endpoint:/ filename:path.story, linenum:1}
+        POST -d {method:get, endpoint:/ filename:path.story, block:1}
         """
         self.application.register_route(**loads(self.request.body))
         self.set_status(204)
